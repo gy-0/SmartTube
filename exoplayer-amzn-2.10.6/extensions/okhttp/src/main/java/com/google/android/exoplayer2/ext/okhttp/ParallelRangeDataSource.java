@@ -72,6 +72,7 @@ public final class ParallelRangeDataSource extends BaseDataSource {
       try {
         count = reader.read(target, offset, readLength);
       } catch (IOException error) {
+        Map<String, List<String>> previousHeaders = reader.getResponseHeaders();
         reader.close();
         reader = null;
         if (Thread.currentThread().isInterrupted() || error.getClass() == InterruptedIOException.class
@@ -81,6 +82,7 @@ public final class ParallelRangeDataSource extends BaseDataSource {
         // Only bytes already delivered to the extractor count, not prefetched bytes.
         openFallback(spec.subrange(delivered,
             length == C.LENGTH_UNSET ? C.LENGTH_UNSET : length - delivered));
+        if (delivered > 0) validateFallbackEntity(previousHeaders, fallback.getResponseHeaders());
         count = fallback.read(target, offset, readLength);
       }
     } else {
@@ -96,6 +98,28 @@ public final class ParallelRangeDataSource extends BaseDataSource {
   private long openFallback(DataSpec remaining) throws IOException {
     fallback = fallbackFactory.createDataSource();
     return fallback.open(remaining);
+  }
+
+  private static void validateFallbackEntity(Map<String, List<String>> previous,
+      Map<String, List<String>> resumed) throws IOException {
+    String name = "ETag";
+    String expected = header(previous, name);
+    if (expected == null || expected.startsWith("W/")) {
+      name = "Last-Modified";
+      expected = header(previous, name);
+    }
+    if (expected != null && !expected.equals(header(resumed, name))) {
+      throw new ParallelRangeReader.EntityChangedException();
+    }
+  }
+
+  private static String header(Map<String, List<String>> headers, String name) {
+    for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+      if (entry.getKey() != null && entry.getKey().equalsIgnoreCase(name) && !entry.getValue().isEmpty()) {
+        return entry.getValue().get(0);
+      }
+    }
+    return null;
   }
 
   private static boolean eligible(DataSpec spec) {

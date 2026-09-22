@@ -52,7 +52,7 @@ public class ParallelRangeDataSourceTest {
           start = Integer.parseInt(parts[0]);
           if (parts.length > 1) end = Math.min(end, Integer.parseInt(parts[1]));
         }
-        if ("fallback".equals(mode) && start >= ParallelRangeReader.BLOCK_SIZE
+        if (("fallback".equals(mode) || "changed-fallback".equals(mode)) && start >= ParallelRangeReader.BLOCK_SIZE
             && end - start + 1 <= ParallelRangeReader.BLOCK_SIZE) {
           return new MockResponse().setResponseCode(503);
         }
@@ -60,7 +60,7 @@ public class ParallelRangeDataSourceTest {
         MockResponse response = new MockResponse().setBody(new Buffer().write(data, start, end - start + 1));
         if (header != null && !"ignored".equals(mode)) {
           response.setResponseCode(206).setHeader("Content-Range", "bytes " + start + "-" + end + "/" + data.length)
-              .setHeader("ETag", "changed".equals(mode) && start > 0 ? "\"v2\"" : "\"v1\"");
+              .setHeader("ETag", ("changed".equals(mode) || "changed-fallback".equals(mode)) && start > 0 ? "\"v2\"" : "\"v1\"");
         }
         return response;
       }
@@ -147,6 +147,17 @@ public class ParallelRangeDataSourceTest {
     assertEquals("preserved", request.getHeader("X-Test"));
     assertEquals(1, server.getRequestCount());
     assertEquals(1, fallbackOpens.get());
+  }
+
+  @Test public void changedEntityDuringFallbackIsAlsoRejected() throws Exception {
+    mode = "changed-fallback";
+    source.open(spec("/video.mp4", 0, data.length));
+    try {
+      drain();
+      fail("Fallback must not splice a changed entity");
+    } catch (ParallelRangeReader.EntityChangedException expected) {
+      assertEquals(1, fallbackOpens.get());
+    }
   }
 
   @Test public void manifestUsesOriginalLoader() throws Exception {
