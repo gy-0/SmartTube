@@ -25,6 +25,7 @@ public final class ParallelRangeReaderTest {
   private static final AtomicInteger ACTIVE = new AtomicInteger();
   private static final AtomicInteger PEAK = new AtomicInteger();
   private static final AtomicInteger REQUESTS = new AtomicInteger();
+  private static final AtomicInteger RETRIES = new AtomicInteger();
   private static final Set<Integer> PORTS = Collections.synchronizedSet(new HashSet<>());
   private static final OkHttpClient CLIENT = new OkHttpClient.Builder()
       .protocols(Collections.singletonList(Protocol.HTTP_1_1))
@@ -47,6 +48,7 @@ public final class ParallelRangeReaderTest {
       checkBytes("last byte", "/ok", DATA.length - 1, -1, new byte[] {DATA[DATA.length - 1]});
       checkBytes("two connections", "/ok", 0, DATA.length, DATA, 2);
       checkBytes("redirect", "/redirect", 0, DATA.length, DATA);
+      checkBytes("transient worker failure retries", "/retry", 0, DATA.length, DATA);
       for (String path : new String[] {"/ignored", "/wrong-start", "/malformed", "/compressed", "/overflow", "/status"}) {
         expectFailure(path, false);
       }
@@ -176,6 +178,11 @@ public final class ParallelRangeReaderTest {
       end = Math.min(Integer.parseInt(parts[1]), end);
     }
     if (path.equals("/status") || (path.equals("/later-status") && start > 0)) {
+      exchange.sendResponseHeaders(503, -1);
+      exchange.close();
+      return;
+    }
+    if (path.equals("/retry") && start == ParallelRangeReader.BLOCK_SIZE && RETRIES.getAndIncrement() == 0) {
       exchange.sendResponseHeaders(503, -1);
       exchange.close();
       return;

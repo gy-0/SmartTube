@@ -161,6 +161,22 @@ public final class ParallelRangeReader implements AutoCloseable {
   }
 
   private byte[] fetch(long start, int size) throws IOException {
+    try {
+      return fetchOnce(start, size);
+    } catch (IOException firstFailure) {
+      if (closed || Thread.currentThread().isInterrupted()
+          || firstFailure instanceof EntityChangedException) throw firstFailure;
+      // A single stalled connection must not discard all parallel prefetch immediately.
+      try {
+        return fetchOnce(start, size);
+      } catch (IOException secondFailure) {
+        secondFailure.addSuppressed(firstFailure);
+        throw secondFailure;
+      }
+    }
+  }
+
+  private byte[] fetchOnce(long start, int size) throws IOException {
     Call call = newCall(start, start + size - 1);
     Response response = null;
     try {

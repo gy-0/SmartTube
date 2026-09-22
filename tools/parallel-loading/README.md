@@ -13,7 +13,7 @@ over a VPN is claimed.
 
 Every range must return 206 with matching Content-Range, Content-Length (when
 provided), representation length and entity validator (when provided). A failed
-range falls back at the exact byte offset already delivered to the extractor.
+range is retried once, then falls back at the exact byte offset already delivered to the extractor.
 An entity change is propagated as an error instead of splicing representations.
 Closing or interrupting a reader cancels its calls and worker futures.
 

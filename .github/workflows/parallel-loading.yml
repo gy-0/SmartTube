@@ -20,7 +20,7 @@ jobs:
       - name: Verify concurrent transfers and failure handling
         run: bash tools/parallel-loading/test.sh | tee parallel-tests.txt
       - name: Build isolated test APK
-        run: bash gradlew :exoplayer-extension-okhttp:testDebugUnitTest assembleStstableDebug --stacktrace
+        run: bash gradlew :exoplayer-extension-okhttp:testDebugUnitTest :smarttubetv:assembleStstableDebug --stacktrace
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         if: always()
         with:
