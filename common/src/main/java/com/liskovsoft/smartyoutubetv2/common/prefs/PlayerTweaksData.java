@@ -85,6 +85,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
     private boolean mIsLongSpeedListEnabled;
     private boolean mIsExtraLongSpeedListEnabled;
     private int mPlayerDataSource;
+    private int mParallelConnections;
     private boolean mUnlockAllFormats;
     private boolean mIsBufferOnStreamsDisabled;
     private boolean mIsSectionPlaylistEnabled;
@@ -284,6 +285,15 @@ public class PlayerTweaksData implements ProfileChangeListener {
 
     public void setPlayerButtonDisabled(int playerButtons) {
         mPlayerButtons &= ~playerButtons;
+        persistData();
+    }
+
+    public int getParallelConnections() {
+        return mParallelConnections;
+    }
+
+    public void setParallelConnections(int connections) {
+        mParallelConnections = connections == 2 || connections == 4 ? connections : 1;
         persistData();
     }
 
@@ -764,6 +774,8 @@ public class PlayerTweaksData implements ProfileChangeListener {
         mIsQuickSkipVideosAltEnabled = Helpers.parseBoolean(split, 58, false);
         mIsAudioTimeStretchingEnabled = Helpers.parseBoolean(split, 59, true);
         mIsQueueRespectsPlaybackMode = Helpers.parseBoolean(split, 60, false);
+        int connections = Helpers.parseInt(split, 61, 4);
+        mParallelConnections = connections == 2 || connections == 4 ? connections : 1;
 
         updateDefaultValues();
     }
@@ -791,7 +803,7 @@ public class PlayerTweaksData implements ProfileChangeListener {
                 mIsUnsafeAudioFormatsEnabled, null, mIsLoopShortsEnabled, mIsQuickSkipShortsEnabled, mIsRememberPositionOfLiveVideosEnabled,
                 mIsOculusQuestFixEnabled, null, mIsExtraLongSpeedListEnabled, mIsQuickSkipVideosEnabled, mIsNetworkErrorFixingDisabled, mIsCommentsPlacedLeft,
                 null, mIsAudioFocusEnabled, mIsDontResizeVideoToFitDialogEnabled, mIsSuggestionsHorizontallyScrolled,
-                mIsQuickSkipShortsAltEnabled, mIsQuickSkipVideosAltEnabled, mIsAudioTimeStretchingEnabled, mIsQueueRespectsPlaybackMode
+                mIsQuickSkipShortsAltEnabled, mIsQuickSkipVideosAltEnabled, mIsAudioTimeStretchingEnabled, mIsQueueRespectsPlaybackMode, mParallelConnections
                 ));
     }
 

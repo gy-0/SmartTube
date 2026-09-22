@@ -1,0 +1,31 @@
+name: Parallel loading tests and APK
+on:
+  push:
+    branches: [codex/parallel-video-loading]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Verify concurrent transfers and failure handling
+        run: bash tools/parallel-loading/test.sh | tee parallel-tests.txt
+      - name: Build isolated test APK
+        run: bash gradlew assembleStstableDebug --stacktrace
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+        if: always()
+        with:
+          name: SmartTube-Parallel
+          path: |
+            smarttubetv/build/outputs/apk/ststable/debug/*.apk
+            parallel-tests.txt
+            **/build/reports/tests/**

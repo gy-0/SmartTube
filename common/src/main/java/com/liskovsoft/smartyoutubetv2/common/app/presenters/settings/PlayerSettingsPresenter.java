@@ -61,6 +61,7 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
         appendVideoPresetsCategory(settingsPresenter);
         appendPlayerButtonsCategory(settingsPresenter);
         appendNetworkEngineCategory(settingsPresenter);
+        appendParallelConnectionsCategory(settingsPresenter);
         appendVideoBufferCategory(settingsPresenter);
         appendVideoZoomCategory(settingsPresenter);
         appendVideoSpeedCategory(settingsPresenter);
@@ -321,6 +322,19 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
     private void appendPlaybackModeCategory(AppDialogPresenter settingsPresenter) {
         OptionCategory category = AppDialogUtil.createPlaybackModeCategory(getContext());
         settingsPresenter.appendCategory(category);
+    }
+
+    private void appendParallelConnectionsCategory(AppDialogPresenter settingsPresenter) {
+        List<OptionItem> options = new ArrayList<>();
+        for (int[] entry : new int[][] {
+                {R.string.parallel_loading_off, 1}, {R.string.parallel_loading_two, 2},
+                {R.string.parallel_loading_four, 4}}) {
+            options.add(UiOptionItem.from(getContext().getString(entry[0]),
+                    getContext().getString(R.string.parallel_loading_description),
+                    option -> mPlayerTweaksData.setParallelConnections(entry[1]),
+                    mPlayerTweaksData.getParallelConnections() == entry[1]));
+        }
+        settingsPresenter.appendRadioCategory(getContext().getString(R.string.parallel_loading), options);
     }
 
     private void appendNetworkEngineCategory(AppDialogPresenter settingsPresenter) {

@@ -9,6 +9,10 @@ import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ext.cronet.CronetDataSourceFactory;
 import com.google.android.exoplayer2.ext.cronet.CronetEngineWrapper;
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory;
+import com.google.android.exoplayer2.ext.okhttp.ParallelRangeDataSource;
+import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
+import java.util.Collections;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -112,7 +116,16 @@ public class ExoMediaSourceFactory {
      */
     private DataSource.Factory buildDataSourceFactory(boolean useBandwidthMeter) {
         DefaultBandwidthMeter bandwidthMeter = useBandwidthMeter ? BANDWIDTH_METER : null;
-        return new DefaultDataSourceFactory(mContext, bandwidthMeter, buildHttpDataSourceFactory(useBandwidthMeter));
+        HttpDataSource.Factory fallback = buildHttpDataSourceFactory(false);
+        // HTTP/1.1 gives concurrent ranges separate transport connections instead of HTTP/2 streams.
+        OkHttpClient parallelClient = OkHttpManager.instance().getClient().newBuilder()
+                .protocols(Collections.singletonList(Protocol.HTTP_1_1)).build();
+        DataSource.Factory media = () -> {
+            int connections = PlayerTweaksData.instance(mContext).getParallelConnections();
+            return connections == 1 ? fallback.createDataSource()
+                    : new ParallelRangeDataSource(parallelClient, fallback, USER_AGENT, connections);
+        };
+        return new DefaultDataSourceFactory(mContext, bandwidthMeter, media);
     }
 
     /**

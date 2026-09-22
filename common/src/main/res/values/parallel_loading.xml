@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="parallel_loading">Parallel video loading</string>
+    <string name="parallel_loading_off">Off</string>
+    <string name="parallel_loading_two">2 connections</string>
+    <string name="parallel_loading_four">4 connections</string>
+    <string name="parallel_loading_description">Speeds up supported videos on slow connections. Takes effect on the next video. Some video streams use normal loading.</string>
+</resources>

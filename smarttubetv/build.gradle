@@ -113,6 +113,8 @@ android {
         }
         // Use same key for release and debug for testing
         debug {
+            applicationIdSuffix ".parallel"
+            versionNameSuffix "-parallel"
             if (keystorePropertiesFile.exists()) {
                 signingConfig signingConfigs.release
             }

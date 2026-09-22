@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="parallel_loading">影片多執行緒載入</string>
+    <string name="parallel_loading_off">關閉</string>
+    <string name="parallel_loading_two">2 路連線</string>
+    <string name="parallel_loading_four">4 路連線</string>
+    <string name="parallel_loading_description">在單連線較慢時加速支援的影片，下次播放生效。部分影片串流仍使用一般載入。</string>
+</resources>
