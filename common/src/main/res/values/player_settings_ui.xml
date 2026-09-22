@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_group_network">Network &amp; buffering</string>
+    <string name="player_group_network_hint">Connections, buffer and network engine</string>
+    <string name="player_group_picture">Picture &amp; sound</string>
+    <string name="player_group_picture_hint">Video presets, zoom and audio</string>
+    <string name="player_group_controls">Playback controls</string>
+    <string name="player_group_controls_hint">Playback mode, buttons and seeking</string>
+    <string name="player_group_advanced">Advanced</string>
+    <string name="player_group_advanced_hint">Compatibility and developer options</string>
+    <string name="parallel_loading_off_hint">Uses the standard loader</string>
+    <string name="parallel_loading_two_hint">Up to 2 simultaneous connections</string>
+    <string name="parallel_loading_four_hint">Up to 4 simultaneous connections</string>
+</resources>

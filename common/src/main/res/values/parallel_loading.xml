@@ -4,5 +4,5 @@
     <string name="parallel_loading_off">Off</string>
     <string name="parallel_loading_two">2 connections</string>
     <string name="parallel_loading_four">4 connections</string>
-    <string name="parallel_loading_description">Speeds up supported videos on slow connections. Takes effect on the next video. Some video streams use normal loading.</string>
+    <string name="parallel_loading_description">Applies to the next video. Supported streams load in parallel; other streams use the standard loader.</string>
 </resources>

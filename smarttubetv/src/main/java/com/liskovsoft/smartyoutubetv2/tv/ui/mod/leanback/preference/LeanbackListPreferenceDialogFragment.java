@@ -170,6 +170,7 @@ public class LeanbackListPreferenceDialogFragment extends LeanbackPreferenceDial
 
         final CharSequence message = mDialogMessage;
         if (!TextUtils.isEmpty(message)) {
+            final boolean hasChoices = !mMulti && mEntries != null && mEntries.length > 0;
             final TextView messageView = (TextView) view.findViewById(android.R.id.message);
 
             // Modified. Make textView focusable and clickable.
@@ -177,7 +178,7 @@ public class LeanbackListPreferenceDialogFragment extends LeanbackPreferenceDial
             //messageView.setMovementMethod(LinkMovementMethod.getInstance()); // allow to move if no links in desc
             //messageView.setLinksClickable(true); // NOTE: don't prevent click actions
 
-            messageView.setFocusable(true);
+            messageView.setFocusable(!hasChoices);
             messageView.setVisibility(View.VISIBLE);
             messageView.setText(message);
 
@@ -205,9 +206,18 @@ public class LeanbackListPreferenceDialogFragment extends LeanbackPreferenceDial
                 }
             });
 
-            // Modified. Remove other views.
-            ViewGroup parent = (ViewGroup) verticalGridView.getParent();
-            parent.removeView(verticalGridView);
+            // Preserve the existing text-only multi-list dialogs; radio help keeps its choices.
+            if (!hasChoices) {
+                ViewGroup parent = (ViewGroup) verticalGridView.getParent();
+                parent.removeView(verticalGridView);
+            } else {
+                // Linkify installs a movement method which can make a plain help label focusable.
+                messageView.setMovementMethod(null);
+                messageView.setFocusable(false);
+                messageView.setClickable(false);
+                messageView.setLongClickable(false);
+                verticalGridView.requestFocus();
+            }
         }
 
         return view;

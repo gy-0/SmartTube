@@ -4,5 +4,5 @@
     <string name="parallel_loading_off">关闭</string>
     <string name="parallel_loading_two">2 路连接</string>
     <string name="parallel_loading_four">4 路连接</string>
-    <string name="parallel_loading_description">在单连接较慢时加速支持的视频，下次播放生效。部分视频流仍使用普通加载。</string>
+    <string name="parallel_loading_description">下次播放生效。支持的视频流使用多连接，其余视频流仍使用普通加载。</string>
 </resources>

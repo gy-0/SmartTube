@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_group_network">网络与缓冲</string>
+    <string name="player_group_network_hint">多线程加载、视频缓冲、网络引擎</string>
+    <string name="player_group_picture">画面与声音</string>
+    <string name="player_group_picture_hint">视频预设、画面缩放、音频设置</string>
+    <string name="player_group_controls">播放操作</string>
+    <string name="player_group_controls_hint">播放模式、遥控按键、快进快退</string>
+    <string name="player_group_advanced">高级</string>
+    <string name="player_group_advanced_hint">兼容性与开发者选项</string>
+    <string name="parallel_loading_off_hint">使用普通加载方式</string>
+    <string name="parallel_loading_two_hint">最多同时使用 2 路连接</string>
+    <string name="parallel_loading_four_hint">最多同时使用 4 路连接</string>
+</resources>

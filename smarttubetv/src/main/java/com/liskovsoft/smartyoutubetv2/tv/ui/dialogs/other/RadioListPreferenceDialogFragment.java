@@ -46,7 +46,7 @@ public class RadioListPreferenceDialogFragment extends LeanbackListPreferenceDia
 
             VerticalGridView verticalGridView = view.findViewById(android.R.id.list);
             if (verticalGridView != null) {
-                verticalGridView.scrollToPosition(findSelectedPosition());
+                verticalGridView.setSelectedPosition(findSelectedPosition());
             }
         }
 

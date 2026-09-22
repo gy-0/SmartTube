@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_group_network">網路與緩衝</string>
+    <string name="player_group_network_hint">多執行緒載入、影片緩衝、網路引擎</string>
+    <string name="player_group_picture">畫面與聲音</string>
+    <string name="player_group_picture_hint">影片預設、畫面縮放、音訊設定</string>
+    <string name="player_group_controls">播放操作</string>
+    <string name="player_group_controls_hint">播放模式、遙控按鍵、快轉倒轉</string>
+    <string name="player_group_advanced">進階</string>
+    <string name="player_group_advanced_hint">相容性與開發者選項</string>
+    <string name="parallel_loading_off_hint">使用一般載入方式</string>
+    <string name="parallel_loading_two_hint">最多同時使用 2 路連線</string>
+    <string name="parallel_loading_four_hint">最多同時使用 4 路連線</string>
+</resources>

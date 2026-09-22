@@ -68,6 +68,13 @@ public class OptionCategory {
     public static final int TYPE_LONG_TEXT = 5;
     public static final int TYPE_CHAT = 6;
     public static final int TYPE_COMMENTS = 7;
+    public CharSequence description;
+
+    public OptionCategory withDescription(CharSequence description) {
+        this.description = description;
+        return this;
+    }
+
     public final int id;
     public final int type;
     public final CharSequence title;

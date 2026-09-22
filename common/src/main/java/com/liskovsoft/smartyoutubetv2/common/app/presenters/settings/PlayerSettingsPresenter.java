@@ -57,32 +57,57 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
     public void show() {
         AppDialogPresenter settingsPresenter = AppDialogPresenter.instance(getContext());
 
-        appendPlaybackModeCategory(settingsPresenter);
-        appendVideoPresetsCategory(settingsPresenter);
-        appendPlayerButtonsCategory(settingsPresenter);
-        appendNetworkEngineCategory(settingsPresenter);
-        appendParallelConnectionsCategory(settingsPresenter);
-        appendVideoBufferCategory(settingsPresenter);
-        appendVideoZoomCategory(settingsPresenter);
-        appendVideoSpeedCategory(settingsPresenter);
-        appendAudioLanguageCategory(settingsPresenter);
-        appendAudioDelayCategory(settingsPresenter);
-        appendMasterVolumeCategory(settingsPresenter);
-        appendOKButtonCategory(settingsPresenter);
-        appendUIAutoHideCategory(settingsPresenter);
-        appendSeekTypeCategory(settingsPresenter);
-        appendSeekingPreviewCategory(settingsPresenter);
-        AppDialogUtil.appendSeekIntervalDialogItems(getContext(), settingsPresenter, mPlayerData, false);
-        //appendRememberSpeedCategory(settingsPresenter);
-        //appendScreenOffTimeoutCategory(settingsPresenter);
-        appendEndingTimeCategory(settingsPresenter);
-        appendPixelRatioCategory(settingsPresenter);
-        //appendPlayerExitCategory(settingsPresenter);
-        appendSleepTimerCategory(settingsPresenter);
-        appendMiscCategory(settingsPresenter);
-        appendDeveloperCategory(settingsPresenter);
-
+        appendGroup(settingsPresenter, R.string.player_group_network, R.string.player_group_network_hint, this::showNetwork);
+        appendGroup(settingsPresenter, R.string.player_group_picture, R.string.player_group_picture_hint, this::showPicture);
+        appendGroup(settingsPresenter, R.string.player_group_controls, R.string.player_group_controls_hint, this::showControls);
+        appendGroup(settingsPresenter, R.string.player_group_advanced, R.string.player_group_advanced_hint, this::showAdvanced);
         settingsPresenter.showDialog(getContext().getString(R.string.settings_player), mOnFinish);
+    }
+
+    private void appendGroup(AppDialogPresenter presenter, int title, int hint, Runnable action) {
+        presenter.appendSingleButton(UiOptionItem.from(getContext().getString(title),
+                getContext().getString(hint), option -> action.run(), false));
+    }
+
+    private void showNetwork() {
+        AppDialogPresenter presenter = AppDialogPresenter.instance(getContext());
+        appendParallelConnectionsCategory(presenter);
+        appendVideoBufferCategory(presenter);
+        appendNetworkEngineCategory(presenter);
+        presenter.showDialog(getContext().getString(R.string.player_group_network));
+    }
+
+    private void showPicture() {
+        AppDialogPresenter presenter = AppDialogPresenter.instance(getContext());
+        appendVideoPresetsCategory(presenter);
+        appendVideoZoomCategory(presenter);
+        appendPixelRatioCategory(presenter);
+        appendAudioLanguageCategory(presenter);
+        appendAudioDelayCategory(presenter);
+        appendMasterVolumeCategory(presenter);
+        presenter.showDialog(getContext().getString(R.string.player_group_picture));
+    }
+
+    private void showControls() {
+        AppDialogPresenter presenter = AppDialogPresenter.instance(getContext());
+        appendPlaybackModeCategory(presenter);
+        appendVideoSpeedCategory(presenter);
+        appendPlayerButtonsCategory(presenter);
+        appendOKButtonCategory(presenter);
+        appendUIAutoHideCategory(presenter);
+        appendSeekTypeCategory(presenter);
+        appendSeekingPreviewCategory(presenter);
+        AppDialogUtil.appendSeekIntervalDialogItems(getContext(), presenter, mPlayerData, false);
+        appendEndingTimeCategory(presenter);
+        appendSleepTimerCategory(presenter);
+        presenter.showDialog(getContext().getString(R.string.player_group_controls));
+    }
+
+    private void showAdvanced() {
+        AppDialogPresenter presenter = AppDialogPresenter.instance(getContext());
+        appendMiscCategory(presenter);
+        appendDeveloperCategory(presenter);
+        presenter.showDialog(getContext().getString(R.string.player_group_advanced));
     }
 
     private void appendOKButtonCategory(AppDialogPresenter settingsPresenter) {
@@ -327,14 +352,17 @@ public class PlayerSettingsPresenter extends BasePresenter<Void> {
     private void appendParallelConnectionsCategory(AppDialogPresenter settingsPresenter) {
         List<OptionItem> options = new ArrayList<>();
         for (int[] entry : new int[][] {
-                {R.string.parallel_loading_off, 1}, {R.string.parallel_loading_two, 2},
-                {R.string.parallel_loading_four, 4}}) {
+                {R.string.parallel_loading_off, 1, R.string.parallel_loading_off_hint},
+                {R.string.parallel_loading_two, 2, R.string.parallel_loading_two_hint},
+                {R.string.parallel_loading_four, 4, R.string.parallel_loading_four_hint}}) {
             options.add(UiOptionItem.from(getContext().getString(entry[0]),
-                    getContext().getString(R.string.parallel_loading_description),
+                    getContext().getString(entry[2]),
                     option -> mPlayerTweaksData.setParallelConnections(entry[1]),
                     mPlayerTweaksData.getParallelConnections() == entry[1]));
         }
-        settingsPresenter.appendRadioCategory(getContext().getString(R.string.parallel_loading), options);
+        settingsPresenter.appendCategory(OptionCategory.radioList(
+                getContext().getString(R.string.parallel_loading), options)
+                .withDescription(getContext().getString(R.string.parallel_loading_description)));
     }
 
     private void appendNetworkEngineCategory(AppDialogPresenter settingsPresenter) {

@@ -2,6 +2,9 @@ package com.liskovsoft.smartyoutubetv2.tv.ui.dialogs;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 import androidx.preference.DialogPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.MultiSelectListPreference;
@@ -10,7 +13,6 @@ import androidx.preference.SwitchPreference;
 import com.liskovsoft.sharedutils.helpers.MessageHelpers;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionCategory;
 import com.liskovsoft.smartyoutubetv2.common.app.models.playback.ui.OptionItem;
-import com.liskovsoft.smartyoutubetv2.common.utils.Utils;
 import com.liskovsoft.smartyoutubetv2.tv.R;
 import com.liskovsoft.smartyoutubetv2.tv.ui.dialogs.other.ChatPreference;
 import com.liskovsoft.smartyoutubetv2.tv.ui.dialogs.other.CommentsPreference;
@@ -118,6 +120,7 @@ public class AppPreferenceManager {
             Preference preference = new Preference(mContext);
             preference.setPersistent(false);
             preference.setTitle(item.getTitle());
+            preference.setSummary(item.getDescription());
             preference.setOnPreferenceClickListener(pref -> {
                 item.onSelect(true);
                 return true;
@@ -173,6 +176,15 @@ public class AppPreferenceManager {
         pref.setEntries(prefData.entries);
         pref.setEntryValues(prefData.values);
         pref.setValue(prefData.defaultValue);
+        pref.setSummaryProvider(preference -> {
+            String value = ((ListPreference) preference).getValue();
+            for (OptionItem item : category.options) {
+                if (item.toString().equals(value)) {
+                    return item.getTitle();
+                }
+            }
+            return null;
+        });
 
         pref.setOnPreferenceChangeListener((preference, newValue) -> {
             for (OptionItem optionItem : category.options) {
@@ -257,7 +269,9 @@ public class AppPreferenceManager {
 
             // Note, multi lists don't have individual (per item) descriptions. So, append description to title.
             if (optionItem.getDescription() != null) {
-                title = TextUtils.concat(title, "\n", Utils.italic(optionItem.getDescription()));
+                SpannableString description = new SpannableString(optionItem.getDescription());
+                description.setSpan(new RelativeSizeSpan(0.85f), 0, description.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                title = TextUtils.concat(title, "\n", description);
             }
 
             titles[i] = title;
@@ -276,6 +290,9 @@ public class AppPreferenceManager {
         pref.setPersistent(false);
         pref.setTitle(category.title);
         pref.setDialogTitle(category.title);
+        if (category.description != null) {
+            pref.setDialogMessage(category.description);
+        }
         pref.setKey(category.toString());
     }
 }
